@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP WS2812b
+D WS2812b LED
+K WS2812 LED
+F http://www.semicon.toshiba.co.jp/docs/datasheet/en/Opto/TLP785_TLP785F_en_datasheet_120220.pdf
+$ENDCMP
+#
+#End Doc Library

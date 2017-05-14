@@ -69,3 +69,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+Gerber*
+*.zip

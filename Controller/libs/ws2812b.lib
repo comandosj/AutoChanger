@@ -1,0 +1,20 @@
+EESchema-LIBRARY Version 2.3
+#encoding utf-8
+#
+# WS2812b
+#
+DEF WS2812b U 0 40 Y Y 1 F N
+F0 "U" -40 90 50 H V L CNN
+F1 "WS2812b" -180 0 50 H V L CNN
+F2 "" -200 -200 50 H V L CIN
+F3 "https://cdn-shop.adafruit.com/datasheets/WS2812B.pdf" -350 280 50 H I L CNN
+DRAW
+S -230 140 230 -140 0 1 10 f
+X VDD 1 -330 100 100 R 39 39 1 1 P
+X DOUT 2 -330 -100 100 R 39 39 1 1 P
+X VSS 3 330 -100 100 L 39 39 1 1 P
+X DIN 4 330 100 100 L 39 39 1 1 P
+ENDDRAW
+ENDDEF
+#
+#End Library
