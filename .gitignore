@@ -71,4 +71,6 @@ $RECYCLE.BIN/
 *.lnk
 
 Gerber*
+dxf*
 *.zip
+*.swp

@@ -3,7 +3,7 @@
   (general
     (links 118)
     (no_connects 0)
-    (area 89.140558 79.689999 207.24056 112.47)
+    (area 89.140558 80.002459 207.24056 112.102461)
     (thickness 1.6)
     (drawings 35)
     (tracks 399)
@@ -2794,7 +2794,7 @@
     (pad 2 thru_hole circle (at 3.25 0 90) (size 2 2) (drill 1) (layers *.Cu *.Mask)
       (net 46 "Net-(R12-Pad2)"))
     (model Buzzers_Beepers.3dshapes/Buzzer_12x9.5RM7.6.wrl
-      (at (xyz 0.15 0 0))
+      (at (xyz 0 0 0))
       (scale (xyz 4 4 4))
       (rotate (xyz 0 0 0))
     )
