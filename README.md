@@ -3,19 +3,21 @@ AutoChanger - A Knitting Machine Auto Colour Changer to replace a Brother KRC-90
 
 This project was designed to provide a lower cost replacement for the commercial auto colour changer available from Brother for their 1980's electronic knitting machines.
 
-You can Read about the progress of this design at the following links:
+You can read about the progress of this design at the following links:
 
 [Building a better colour changer - Part 1 - Designing Hardware](http://heartofpluto.co/2017/04/25/building-a-better-colour-changer-part-1-designing-hardware/)
 
 [Building a better colour changer - Part 2 - Firing the lasers](http://heartofpluto.co/2017/05/08/building-a-better-colour-changer-part-2-firing-the-lasers/)
 
 ![Circuit Board Render](Controller/AutoChanger.png?raw=true "Circuit")
+The Arduino Uno compatible controller.
 
 
-[Schematic Design](Controller/AutoChanger.pdf?raw=true Schematic")
+[Schematic Design](Controller/AutoChanger.pdf?raw=true "Schematic")
 
 
 ![Prototype Render](Hardware/changer.v.1.0.png?raw=true "Prototype")
+An early render of the first prototype.
 
 FEATURES
 --------
