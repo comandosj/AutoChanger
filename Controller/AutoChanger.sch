@@ -970,9 +970,9 @@ Wire Wire Line
 	9450 5650 9750 5650
 Wire Wire Line
 	9750 5750 9450 5750
-Text Label 6000 1750 2    60   ~ 0
-MISO
 Text Label 6000 1850 2    60   ~ 0
+MISO
+Text Label 6000 1750 2    60   ~ 0
 MOSI
 Text Label 6000 1950 2    60   ~ 0
 SCK
@@ -1708,4 +1708,16 @@ Wire Wire Line
 Wire Wire Line
 	900  1400 900  1350
 Connection ~ 800  1400
+$Comp
+L CONN_01X01 P12
+U 1 1 59CBCEE5
+P 3050 1200
+F 0 "P12" H 3050 1300 50  0000 C CNN
+F 1 "LOGO" V 3150 1200 50  0000 C CNN
+F 2 "libs:logo" H 3050 1200 50  0001 C CNN
+F 3 "" H 3050 1200 50  0000 C CNN
+	1    3050 1200
+	1    0    0    -1  
+$EndComp
+NoConn ~ 2850 1200
 $EndSCHEMATC
