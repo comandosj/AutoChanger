@@ -1,0 +1,9 @@
+[submodule "Controller/subs/arduino_lib"]
+	path = Controller/subs/arduino_lib
+	url = https://github.com/mivade/arduino_lib
+[submodule "Controller/subs/freetronics_kicad_library"]
+	path = Controller/subs/freetronics_kicad_library
+	url = https://github.com/freetronics/freetronics_kicad_library
+[submodule "Controller/subs/kicad-libraries"]
+	path = Controller/subs/kicad-libraries
+	url = https://github.com/jamesfowkes/kicad-libraries/

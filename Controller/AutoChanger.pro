@@ -1,4 +1,4 @@
-update=10/09/2017 2:14:03 PM
+update=11/10/2017 12:25:19 AM
 version=1
 last_client=kicad
 [pcbnew]
@@ -63,3 +63,4 @@ LibName31=libs/ws2812b
 LibName32=libs/itr9606-f
 LibName33=libs/ch340g
 LibName34=libs/crystal_4pin_smd
+LibName35=subs/kicad-libraries/components/arduino
