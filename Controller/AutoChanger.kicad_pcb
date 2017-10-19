@@ -37,7 +37,7 @@
   )
 
   (setup
-    (last_trace_width 0.5)
+    (last_trace_width 0.25)
     (user_trace_width 0.25)
     (user_trace_width 0.5)
     (trace_clearance 0.2)
@@ -2165,9 +2165,9 @@
     (pad 3 thru_hole oval (at 0 -5.08) (size 1.7 1.7) (drill 1) (layers *.Cu *.Mask)
       (net 31 /A4))
     (model ${KISYS3DMOD}/Pin_Headers.3dshapes/Pin_Header_Straight_1x03_Pitch2.54mm.wrl
-      (at (xyz 0 0 0))
+      (at (xyz 0 -0.1 0))
       (scale (xyz 1 1 1))
-      (rotate (xyz 0 0 0))
+      (rotate (xyz 0 0 90))
     )
   )
 
@@ -2207,9 +2207,9 @@
     (pad 3 thru_hole oval (at 0 -5.08) (size 1.7 1.7) (drill 1) (layers *.Cu *.Mask)
       (net 30 /A5))
     (model ${KISYS3DMOD}/Pin_Headers.3dshapes/Pin_Header_Straight_1x03_Pitch2.54mm.wrl
-      (at (xyz 0 0 0))
+      (at (xyz 0 -0.1 0))
       (scale (xyz 1 1 1))
-      (rotate (xyz 0 0 0))
+      (rotate (xyz 0 0 90))
     )
   )
 
@@ -2293,7 +2293,7 @@
     (pad 30 thru_hole oval (at 7.62 17.78 270) (size 1.6 1.6) (drill 0.8) (layers *.Cu *.Mask B.SilkS)
       (net 14 /D12))
     (model Housings_DIP.3dshapes/DIP-32_W15.24mm.wrl
-      (at (xyz 0 0 0))
+      (at (xyz -0.3 0.7 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
     )
@@ -2339,7 +2339,7 @@
     (pad 4 thru_hole oval (at 2.54 -2.54 90) (size 1.7 1.7) (drill 1) (layers *.Cu *.Mask)
       (net 1 +5V))
     (model ${KISYS3DMOD}/Pin_Headers.3dshapes/Pin_Header_Straight_2x02_Pitch2.54mm.wrl
-      (at (xyz 0 0 0))
+      (at (xyz 0.05 -0.05 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
     )
@@ -2348,10 +2348,10 @@
   (gr_line (start 123.43 86.77) (end 119.87 86.77) (layer F.SilkS) (width 0.2))
   (gr_line (start 123.43 83.81) (end 123.43 86.77) (layer F.SilkS) (width 0.2))
   (gr_line (start 119.87 86.77) (end 123.43 83.81) (layer F.SilkS) (width 0.2))
-  (gr_text GND (at 97.34 86.44 360) (layer B.SilkS) (tstamp 59DE1B26)
+  (gr_text GND (at 97.34 86.44) (layer B.SilkS) (tstamp 59DE1B26)
     (effects (font (size 0.8 0.8) (thickness 0.2)) (justify mirror))
   )
-  (gr_text +5V (at 92.27 86.64 360) (layer B.SilkS) (tstamp 59DE1B22)
+  (gr_text +5V (at 92.27 86.64) (layer B.SilkS) (tstamp 59DE1B22)
     (effects (font (size 0.8 0.8) (thickness 0.2)) (justify mirror))
   )
   (gr_line (start 87.06 104.77) (end 87.07 97.21) (layer Edge.Cuts) (width 0.1))
