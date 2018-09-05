@@ -16,7 +16,8 @@
 #define BUZZER 1 // Is the buzzer on or off.
 
 // Set our version number.  Don't forget to update when featureset changes
-#define VERSION "AutoChanger V.1.3"
+#define VERSION "AutoChanger V.1.5"
+
 
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(1, 4, NEO_GRB + NEO_KHZ800);
 
@@ -46,11 +47,12 @@ unsigned int EEPromUpdateTime = 60000;
 
 
 // arm Trigger
-const int armPin = 2;
+
+const int armPin = 13;
 unsigned int buttonState;             // the current reading from the input pin
-unsigned int lastButtonState = LOW;   // the previous reading from the input pin
+unsigned int lastButtonState = HIGH;   // the previous reading from the input pin
 unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
-unsigned long debounceDelay = 1;    // the debounce time; increase if the output flickers
+unsigned long debounceDelay = 15;    // the debounce time; increase if the output flickers
 byte armCounter = 0;  // We ignore every second pass.
 
 // input buttons
@@ -310,8 +312,8 @@ void checkButtons() {
   } else if (pgrm) {
     // first, reset the arm counter
     // It won't really matter if this happens before we head in to programming mode.
-    if(armCounter != 1) {
-      armCounter = 1;
+    if(armCounter != 0) {
+      armCounter = 0;
       if(DEBUG)
         Serial.println(F("Arm Counter reset."));
     }
@@ -385,7 +387,6 @@ void setPixels(byte colours[3]) {
 void checkArm() {
   int reading = digitalRead(armPin);
 
-
   // If the switch changed, due to noise or pressing:
   if (reading != lastButtonState) {
     // reset the debouncing timer
@@ -400,7 +401,7 @@ void checkArm() {
     if (reading != buttonState) {
       buttonState = reading;
 
-      if (buttonState == HIGH) {
+      if (buttonState == LOW) {
         if(armCounter == 0){
           switchRods();
           armCounter = 1;

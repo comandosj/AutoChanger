@@ -1,0 +1,3 @@
+[submodule "Controller/subs/kicad-libraries"]
+	path = Controller/subs/kicad-libraries
+	url = https://github.com/jamesfowkes/kicad-libraries/
