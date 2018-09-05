@@ -8,13 +8,14 @@
 #include <Wire.h>
 #include <Servo.h>
 #include <EEPROM.h>
+#include <Bounce2.h>
 
 // The colour changer only uses 4 servos.
 byte servos[4][3] = {
-  {A3,1,100},
-  {A2,1,100},
-  {A1,25,145},
-  {A0,1,110},
+  {A0,0,100},
+  {A1,0,100},
+  {A2,0,100},
+  {A3,0,100},
 };
 
 unsigned int servoCount[4] = {0,0,0,0};
@@ -26,6 +27,12 @@ byte pattern[4][21] = {
   {4,0,1,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
   {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 };
+
+const int buttonPins[4] = {10,9,8,7};
+Bounce debouncer[4] = Bounce();
+unsigned long buttonPressTimeStamp;
+unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
+unsigned long debounceDelay = 1;    // the debounce time; increase if the output flickers
 
 Servo myservo[4];
 
@@ -47,6 +54,14 @@ void setup() {
       Serial.print(x);
       Serial.print(": Position ");
       Serial.println(servos[x][1]);
+      delay(600);
+      myservo[x].detach();
+  }
+
+  for (int x = 0; x < 4; x++) {
+    pinMode(buttonPins[x], INPUT);
+    debouncer[x].attach(buttonPins[x]);
+    debouncer[x].interval(5);
   }
 
   writeEEPROM();
@@ -58,7 +73,11 @@ void setup() {
 }
 
 void loop() {
-  
+  for (int x = 0; x < 4; x++) {
+    debouncer[x].update();
+  }
+
+  checkButtons();
 }
 
 void writeEEPROM() {
@@ -86,6 +105,27 @@ void writeEEPROM() {
   }
   EEPROM.put(EEPROMPattern,pattern);
   
+}
+
+void checkButtons() {
+  
+  for (int x = 0; x < 4; x++) {
+      //Serial.println(debouncer[x].read());
+      
+      if(!debouncer[x].read()){
+        myservo[x].write(servos[x][2]);
+        myservo[x].attach(servos[x][0]);
+        delay(600);
+        myservo[x].detach();
+      }
+      else if (myservo[x].read() != servos[x][1]){
+        myservo[x].write(servos[x][1]);
+        myservo[x].attach(servos[x][0]);
+        delay(600);
+        myservo[x].detach();
+      }
+      
+  }
 }
 
 
