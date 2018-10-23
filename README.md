@@ -9,15 +9,17 @@ You can read about the progress of this design at the following links:
 
 [Building a better colour changer - Part 2 - Firing the lasers](http://heartofpluto.co/2017/05/08/building-a-better-colour-changer-part-2-firing-the-lasers/)
 
+[Building a Better Colour Changer – Part 3 – Revising the design](http://heartofpluto.co/2017/10/21/building-a-better-colour-changer-part-3-revising-the-design/)
+
 ![Circuit Board Render](Controller/AutoChanger.png?raw=true "Circuit")
-The Arduino Uno compatible controller.
+The Arduino Nano based controller.
 
 
 [Schematic Design](Controller/AutoChanger.pdf?raw=true "Schematic")
 
 
-![Prototype Render](Hardware/changer.v.1.0.png?raw=true "Prototype")
-An early render of the first prototype.
+![Prototype Render](Hardware/changer.v.1.6.png?raw=true "Render")
+
 
 FEATURES
 --------
