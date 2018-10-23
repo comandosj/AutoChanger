@@ -18,7 +18,7 @@ The Arduino Nano based controller.
 [Schematic Design](Controller/AutoChanger.pdf?raw=true "Schematic")
 
 
-![Prototype Render](Hardware/changer.v.1.6.png?raw=true "Render")
+![Prototype Render](Hardware/changer.v.1.6.jpg?raw=true "Render")
 
 
 FEATURES
