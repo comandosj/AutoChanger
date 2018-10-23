@@ -66,6 +66,7 @@ Bounce pgrmDebouncer = Bounce();
 unsigned long buttonPressTimeStamp;
 boolean triggerPgrm = false;
 boolean pgrmMode = false;
+unsigned long pgrmTimeStamp;
 
 // Buzzer
 const int buzzerPin = 3;
@@ -295,6 +296,7 @@ void checkButtons() {
   // 2. If this is the active servo, cycle to the next in the sequence.
   // 3. If this is not the active servo, temporary swap
   // 4. If we have no pattern, swap servos.
+  // 5. If pgrm is held down, go in to program mode.
   // We assume only one number button at a time.
 
   if(one) {
@@ -321,7 +323,15 @@ void checkButtons() {
     // right, determine if the program button has been held down long enough to go in to programming mode.
     // start programming mode
     // Flash the LED's or something.
+    if (pgrmTimeStamp == 0) {
+      pgrmTimeStamp = millis();
+    }
+    else if (pgrmTimeStamp + 2000 >= millis()) {
+      pgrmMode = true;
+    }
     
+  } else {
+    pgrmTimeStamp = 0;
   }
 }
 
