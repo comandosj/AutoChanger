@@ -52,7 +52,7 @@ const int armPin = 13;
 unsigned int buttonState;             // the current reading from the input pin
 unsigned int lastButtonState = HIGH;   // the previous reading from the input pin
 unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
-unsigned long debounceDelay = 10000;    // the debounce time; increase if the output flickers
+unsigned long debounceDelay = 15;    // the debounce time; increase if the output flickers
 byte armCounter = 0;  // We ignore every second pass.
 
 // input buttons
