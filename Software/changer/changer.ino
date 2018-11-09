@@ -1,9 +1,15 @@
 /*************************************************** 
  *  
  *  
- *  EEPROM Mapping
+ *  Autochanger - https://github.com/mage0r/AutoChanger
  *  
-
+ *  This code is designed to run on an Arduino Nano 3.0 plugged in to the custom board in the repo.
+ *  
+ *  The Nano is flashed with a custom bootloader to enable EEPROM saving
+ *  
+ *  Oh god, please don't keep reading this code.  It is awful.
+ *  
+ *
  ****************************************************/
 
 #include <Wire.h>
@@ -16,21 +22,17 @@
 #define BUZZER 1 // Is the buzzer on or off.
 
 // Set our version number.  Don't forget to update when featureset changes
-#define VERSION "AutoChanger V.1.5"
+#define VERSION "AutoChanger V.2.0"
 
-
+// our Indicator light.
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(1, 4, NEO_GRB + NEO_KHZ800);
 
 // My Neopixels need a high and a low value.
 byte color[2][3]; 
 
 // The colour changer only uses 4 servos.
-byte servos[4][3];/* = {
-  {A3,1,100},
-  {A2,1,100},
-  {A1,25,145},
-  {A0,1,110},
-};*/
+// content for this array is loaded from eeprom
+byte servos[4][3];
 
 Servo myservo[4];
 unsigned long servoTimeout;
@@ -46,40 +48,35 @@ unsigned long EEPromTimeStamp;
 unsigned int EEPromUpdateTime = 60000;
 
 
-// arm Trigger
-
 const int armPin = 13;
 unsigned int buttonState;             // the current reading from the input pin
 unsigned int lastButtonState = HIGH;   // the previous reading from the input pin
 unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
-unsigned long debounceDelay = 15;    // the debounce time; increase if the output flickers
+unsigned long debounceDelay = 10000;    // the debounce time; increase if the output flickers
 byte armCounter = 0;  // We ignore every second pass.
 
 // input buttons
+// These are hardcoded
 const int buttonPins[4] = {10,9,8,7};
-
 const int pgrmPin = 6;
 
 // Debouncing
 Bounce debouncer[4] = Bounce();
+byte previousButton;
 Bounce pgrmDebouncer = Bounce();
 unsigned long buttonPressTimeStamp;
 boolean triggerPgrm = false;
 boolean pgrmMode = false;
-unsigned long pgrmTimeStamp;
+unsigned long pgrmTimeStamp = 0;
+unsigned long pgrmLEDTime = 0;
+byte temp_pattern[21] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}; // temporary pattern.
 
 // Buzzer
 const int buzzerPin = 3;
 
 // Array of ints to store our pattern.
 byte currentPattern = 0;
-byte pattern[4][21];/* = {
-  {2,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {3,0,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {4,0,1,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-};
-*/
+byte pattern[4][21];
 
 // EEPROM Addresses
 const int EEPROMServoCount = 10;
@@ -130,7 +127,16 @@ void setup() {
   // if the program pin is high, trigger a simulator mode.
   if(!digitalRead(pgrmPin)) {
     TestRun();
+  } else if(!digitalRead(buttonPins[0])) {
+    RestoreDefault(0);
+  } else if(!digitalRead(buttonPins[1])) {
+    RestoreDefault(1);
+  } else if(!digitalRead(buttonPins[2])) {
+    RestoreDefault(2);
+  } else if(!digitalRead(buttonPins[3])) {
+    RestoreDefault(3);
   }
+  
 }
 
 void readEEPROM() {
@@ -248,10 +254,43 @@ void switchRods() {
 
 }
 
+// kind of the wrong name for this function
+// It handles when we EXIT program mode
 void programMode() {
-  // The theory is this is triggered after a 2-3 second hold.
-  // then the other buttons can be pressed to program the unit.
-  
+  // write our temp pattern to the array and reset the values to 0.
+  // only do this if we actually have a pattern, i.e. more than 1 entry.
+  if(temp_pattern[0] > 1) {
+    byte temp_number = temp_pattern[0];
+    for(int x = 0; x <= temp_number; x++) {
+      // debug info
+      if(DEBUG) {
+        Serial.print(temp_pattern[x]);
+        Serial.print(",");
+      }
+      
+      // copy
+      pattern[currentPattern][x] = temp_pattern[x];
+
+      // reset
+      temp_pattern[x] = 0;
+    }
+    if(DEBUG)
+      Serial.println();
+
+    // Update the eeprom.
+    if(DEBUG)
+      Serial.println("Writing new Pattern to memory.");
+    EEPROM.put(EEPROMPattern,pattern);
+  } else {
+    Serial.println("No pattern detected.  Not updating.");
+  }
+
+  // reset our device to position 1.
+  for (int x = 0; x < 4; x++) {
+      moveServo(x,1);
+  }
+  servonum = 1;
+  moveServo(pattern[currentPattern][servonum], 2);
 
 }
 
@@ -272,12 +311,22 @@ void loop() {
   // run our button combo section
   checkButtons();
 
-  if(armCounter)
+  
+  if(pgrmMode){
+    if(pgrmLEDTime < millis() - 200) { // if we're in program mode, flash our LED's
+      if(pixels.getPixelColor(0) ==  0x000000)
+        pixels.setPixelColor(0, pixels.Color(color[0][0],color[0][1],color[0][2]));
+      else
+         pixels.setPixelColor(0, pixels.Color(0,0,0));
+      pgrmLEDTime = millis();
+    }
+  } else if(armCounter) // otherwise, set the colour dependent on the mode.
     pixels.setPixelColor(0, pixels.Color(color[1][0],color[1][1],color[1][2]));
   else
     pixels.setPixelColor(0, pixels.Color(color[0][0],color[0][1],color[0][2]));
 
   detachServo();
+
   pixels.show();
 
   writeEEPROM();
@@ -286,10 +335,10 @@ void loop() {
 // look for our button combinations.
 void checkButtons() {
   boolean pgrm = (!pgrmDebouncer.read());
-  boolean one = (!debouncer[0].read());
-  boolean two = (!debouncer[1].read());
-  boolean three = (!debouncer[2].read());
-  boolean four = (!debouncer[3].read());
+  boolean one = (debouncer[0].fell());
+  boolean two = (debouncer[1].fell());
+  boolean three = (debouncer[2].fell());
+  boolean four = (debouncer[3].fell());
 
   // There are several possible actions if number buttons are pressed
   // 1. If pgrm is also pressed, change pattern.
@@ -326,18 +375,60 @@ void checkButtons() {
     if (pgrmTimeStamp == 0) {
       pgrmTimeStamp = millis();
     }
-    else if (pgrmTimeStamp + 2000 >= millis()) {
-      pgrmMode = true;
+  } else {
+
+    // ok. so the prgm button has been released.
+    // lets decide what we want to do.
+    // held down for more than 2 seconds?
+    if (pgrmTimeStamp != 0 && pgrmTimeStamp + 2000 <= millis() ) {
+      if(pgrmMode) {
+        if(DEBUG)
+          Serial.println("Exiting Programming mode.");
+          
+        pgrmMode = false;
+        
+        programMode();
+
+      } else {
+        if(DEBUG)
+          Serial.println("Entering Programming mode.");
+
+        // lets put all our arms down.
+        for (int x = 0; x < 4; x++) {
+            moveServo(x,1);
+        }
+        pgrmMode = true;
+      }
     }
     
-  } else {
     pgrmTimeStamp = 0;
   }
 }
 
 void buttonActions(byte button, boolean pgrm, byte colours[3]) {
+  
   // we repeat these actions a lot
-  if(pgrm) {
+  
+   if(pgrmMode) { // We're in program mode.
+
+      // put down the previous Servo.
+      moveServo(servonum, 1);
+      servonum = button;
+      moveServo(servonum, 2);
+      
+      // iterate the temp pattern number.
+      temp_pattern[0]++;
+      // Add this button to the temp_pattern.
+      temp_pattern[temp_pattern[0]] = button;
+
+      if(temp_pattern[0] == 20) {
+        pgrmMode = false;
+        if(DEBUG)
+          Serial.println("Limit Reached.  Exiting Program Mode.");
+        programMode();
+      }
+      
+    } else if(pgrm) {
       // ok, this only needs to happen if our current servo isn't already the one we want to switch to
       if(pattern[currentPattern][servonum] != pattern[button][1]) {
         moveServo(pattern[currentPattern][servonum],1); // put our current servo down.
@@ -359,29 +450,24 @@ void buttonActions(byte button, boolean pgrm, byte colours[3]) {
       
       setPixels(colours);
     } else if (!pattern[currentPattern][0]) {
-      // No pattern, flick down all the other servos and flick this one up.
+      // No pattern
+      // this is a special case.  flip one up or down.
       for (int x = 0; x < 4; x++) {
-        if(x == button)
-          moveServo(x,2);
-        else
+        if(x == button) {
+          if(servonum == button) {
+            moveServo(x,1); // move down.
+            servonum = -1;
+          } else {
+            moveServo(x,2); // move up
+            servonum = button;
+          }
+        } else {
           moveServo(x,1);
+        }
       }
-      servonum = button;
     } else if (pattern[currentPattern][servonum] == button) {
       // This is the active servo.
       switchRods();
-    } else {
-      // this is a temporary switch.
-      // broken lets disable it
-      /*
-      moveServo(pattern[currentPattern][servonum],1); // put our current servo down.
-      moveServo(0,2); // put this servo up.
-      while(debouncer[0].read()) {
-        // pretty much do nothing
-      }
-      moveServo(0,1); // put this servo down.
-      moveServo(pattern[currentPattern][servonum],2); // move old servo up.
-      */
     }
 }
 
@@ -462,6 +548,40 @@ void TestRun() {
       pixels.show();
       delay(400);
       writeEEPROM(); // update the eeprom if needed.
+    }
+  }
+}
+
+void RestoreDefault(byte button) {
+  // Restore the default patterns!
+
+  static byte defaultPattern[4][21] = {
+    {2,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {3,0,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {4,0,1,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  };
+
+  for(int i = 0; i < 21; i++) {
+    pattern[button][i] = defaultPattern[button][i];
+  }
+
+  // Write them back to our ram
+  EEPROM.put(EEPROMPattern,pattern);
+
+  if(DEBUG) {
+    Serial.print("Default Pattern restored for Pattern ");
+    Serial.print(button);
+    Serial.println(".");
+
+    Serial.println(F("Patterns: "));
+    for(int x = 0; x < 4; x++) {
+      Serial.print(F("  "));
+      for(int y = 0; y < 21; y++) {
+        Serial.print(pattern[x][y]);
+        Serial.print(F(":"));
+      }
+      Serial.println();
     }
   }
 }
